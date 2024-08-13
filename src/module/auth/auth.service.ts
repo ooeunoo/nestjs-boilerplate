@@ -1,8 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
-import { SignUpInput } from './dto/signup.input';
-import { SignInInput } from './dto/signin.input';
+import { SignUpInput } from './input/signup.input';
+import { SignInInput } from './input/signin.input';
 import { HashUtil } from '../../shared/util/hash.util';
 import { ErrorCode } from 'src/core/exception/error';
 import { CustomException } from 'src/core/exception/custom_exception';

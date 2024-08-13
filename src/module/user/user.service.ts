@@ -1,28 +1,33 @@
+// src/module/user/user.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from './entity/user.entity';
-import { CreateUserInput } from './dto/create_user.input';
-import { UpdateUserInput } from './dto/update_user.input';
+import { UserEntity } from '../../core/entity/user.entity';
+import { User } from './model/user.model';
+import { CreateUserInput } from './input/create_user.input';
+import { UpdateUserInput } from './input/update_user.input';
 import { HashUtil } from '../../shared/util/hash.util';
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
+    @InjectRepository(UserEntity)
+    private userRepository: Repository<UserEntity>,
     private hashUtil: HashUtil,
   ) {}
 
   async create(createUserInput: CreateUserInput): Promise<User> {
     const user = this.userRepository.create({
       ...createUserInput,
+      password: await this.hashUtil.hash(createUserInput.password),
     });
-    return this.userRepository.save(user);
+    const savedUser = await this.userRepository.save(user);
+    return this.#mapEntityToModel(savedUser);
   }
 
   async findAll(): Promise<User[]> {
-    return this.userRepository.find();
+    const users = await this.userRepository.find();
+    return users.map(this.#mapEntityToModel);
   }
 
   async findOne(id: string): Promise<User> {
@@ -30,7 +35,7 @@ export class UserService {
     if (!user) {
       throw new NotFoundException(`User with ID "${id}" not found`);
     }
-    return user;
+    return this.#mapEntityToModel(user);
   }
 
   async update(id: string, updateUserInput: UpdateUserInput): Promise<User> {
@@ -41,7 +46,8 @@ export class UserService {
       );
     }
     Object.assign(user, updateUserInput);
-    return this.userRepository.save(user);
+    const updatedUser = await this.userRepository.save(user);
+    return this.#mapEntityToModel(updatedUser);
   }
 
   async remove(id: string): Promise<boolean> {
@@ -49,7 +55,18 @@ export class UserService {
     return result.affected > 0;
   }
 
-  async findByEmail(email: string): Promise<User> {
+  async findByEmail(email: string): Promise<UserEntity | undefined> {
     return this.userRepository.findOne({ where: { email } });
+  }
+
+  #mapEntityToModel(entity: UserEntity): User {
+    return {
+      id: entity.id,
+      email: entity.email,
+      password: entity.password,
+      name: entity.name,
+      createdAt: entity.createdAt,
+      updatedAt: entity.updatedAt,
+    };
   }
 }

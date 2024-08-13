@@ -7,6 +7,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import config from './core/config/config';
 import { ErrorMap, ErrorCode } from './core/exception/error';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -18,7 +19,8 @@ import { ErrorMap, ErrorCode } from './core/exception/error';
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         ...configService.get('database'),
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
+        entities: [join(__dirname, '**', '*.entity.{ts,js}')],
+        autoLoadEntities: true,
       }),
       inject: [ConfigService],
     }),
