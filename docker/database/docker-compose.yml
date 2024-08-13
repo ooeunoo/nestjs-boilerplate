@@ -1,0 +1,17 @@
+services:
+  postgres:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nestjs-postgres
+    environment:
+      POSTGRES_DB: server
+      POSTGRES_USER: server
+      POSTGRES_PASSWORD: server
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

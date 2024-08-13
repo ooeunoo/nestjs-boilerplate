@@ -1,0 +1,14 @@
+database:
+  host: 'localhost'
+  port: 5432
+  username: 'server'
+  password: 'server'
+  database: 'server'
+  synchronize: true
+
+graphql:
+  playground: true
+  debug: true
+
+jwt:
+  secret: 'dev_secret'
