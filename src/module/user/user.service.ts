@@ -1,4 +1,3 @@
-// src/module/user/user.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -17,10 +16,7 @@ export class UserService {
   ) {}
 
   async create(createUserInput: CreateUserInput): Promise<User> {
-    const user = this.userRepository.create({
-      ...createUserInput,
-      password: await this.hashUtil.hash(createUserInput.password),
-    });
+    const user = this.userRepository.create(createUserInput);
     const savedUser = await this.userRepository.save(user);
     return this.#mapEntityToModel(savedUser);
   }

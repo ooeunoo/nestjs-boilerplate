@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { HttpStatus, Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './module/user/user.module';
@@ -8,6 +8,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import config from './core/config/config';
 import { ErrorMap, ErrorCode } from './core/exception/error';
 import { join } from 'path';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { join } from 'path';
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         ...configService.get('database'),
+        namingStrategy: new SnakeNamingStrategy(),
         entities: [join(__dirname, '**', '*.entity.{ts,js}')],
         autoLoadEntities: true,
       }),
@@ -45,7 +47,7 @@ import { join } from 'path';
           // 기본 에러 처리
           return {
             message: error.message,
-            code: 500,
+            code: HttpStatus.INTERNAL_SERVER_ERROR,
             error_code: ErrorCode.INTERNAL_SERVER_ERROR,
           };
         },

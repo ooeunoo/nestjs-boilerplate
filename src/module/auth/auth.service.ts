@@ -28,9 +28,10 @@ export class AuthService {
       password: hashedPassword,
     });
     const token = this.generateToken(user);
+
     return {
-      access_token: token.access_token,
-      user_id: user.id,
+      accessToken: token.accessToken,
+      userId: user.id,
       email: user.email,
     };
   }
@@ -44,14 +45,14 @@ export class AuthService {
       signInInput.password,
       user.password,
     );
-
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
     const token = this.generateToken(user);
+
     return {
-      access_token: token.access_token,
-      user_id: user.id,
+      accessToken: token.accessToken,
+      userId: user.id,
       email: user.email,
     };
   }
@@ -59,7 +60,7 @@ export class AuthService {
   private generateToken(user: any) {
     const payload = { sub: user.id, email: user.email, name: user.name };
     return {
-      access_token: this.jwtService.sign(payload),
+      accessToken: this.jwtService.sign(payload),
     };
   }
 }

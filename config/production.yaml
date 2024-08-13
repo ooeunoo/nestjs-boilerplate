@@ -6,9 +6,5 @@ database:
   database: 'server'
   synchronize: false
 
-graphql:
-  playground: false
-  debug: false
-
 jwt:
   secret: 'prod_secret'
